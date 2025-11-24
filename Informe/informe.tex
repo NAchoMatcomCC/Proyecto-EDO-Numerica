@@ -1,0 +1,356 @@
+%===================================================================================
+% JORNADA CIENTÍFICA ESTUDIANTIL - MATCOM, UH
+%===================================================================================
+% Esta plantilla ha sido diseñada para ser usada en los artículos de la
+% Jornada Científica Estudiantil de MatCom.
+%
+% Por favor, siga las instrucciones de esta plantilla y rellene en las secciones
+% correspondientes.
+%
+% NOTA: Necesitará el archivo 'jcematcom.sty' en la misma carpeta donde esté este
+%       archivo para poder utilizar esta plantila.
+%===================================================================================
+
+
+
+%===================================================================================
+% PREÁMBULO
+%-----------------------------------------------------------------------------------
+\documentclass[a4paper,10pt,twocolumn]{article}
+
+%===================================================================================
+% Paquetes
+%-----------------------------------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{jcematcom}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[pdftex]{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+%-----------------------------------------------------------------------------------
+% Configuración
+%-----------------------------------------------------------------------------------
+\hypersetup{colorlinks,%
+	    citecolor=black,%
+	    filecolor=black,%
+	    linkcolor=black,%
+	    urlcolor=blue}
+
+%===================================================================================
+
+
+
+%===================================================================================
+% Presentacion
+%-----------------------------------------------------------------------------------
+% Título
+%-----------------------------------------------------------------------------------
+\title{Tema 14: Resistencia proporcional a la velocidad y a su cuadrado}
+
+%-----------------------------------------------------------------------------------
+% Autores
+%-----------------------------------------------------------------------------------
+\author{\\
+\name Anthony Ventosa Lescay \AND
+\name Abner Alexandro Abreu Tamayo \AND
+\name Ignacio Miguel Rodríguez Pacheco
+\\
+\\ \addr Grupo C212}
+
+%-----------------------------------------------------------------------------------
+% Tutores
+%-----------------------------------------------------------------------------------
+\tutors{\\
+\\
+}
+
+%-----------------------------------------------------------------------------------
+% Headings
+%-----------------------------------------------------------------------------------
+\jcematcomheading{\the\year}{1-\pageref{end}}{A. Uno, A. Dos}
+
+%-----------------------------------------------------------------------------------
+
+%===================================================================================
+
+
+
+%===================================================================================
+% DOCUMENTO
+%-----------------------------------------------------------------------------------
+\begin{document}
+
+%-----------------------------------------------------------------------------------
+% NO BORRAR ESTA LINEA!
+%-----------------------------------------------------------------------------------
+\twocolumn[
+%-----------------------------------------------------------------------------------
+
+\maketitle
+
+%===================================================================================
+% Resumen y Abstract
+%-----------------------------------------------------------------------------------
+\selectlanguage{spanish} % Para producir el documento en Español
+
+%-----------------------------------------------------------------------------------
+% Resumen en Español
+%-----------------------------------------------------------------------------------
+\begin{abstract}
+
+	El resumen en español debe constar de $100$ a $200$ palabras y presentar de forma
+	clara y concisa el contenido fundamental del artículo.
+
+\end{abstract}
+
+%-----------------------------------------------------------------------------------
+% English Abstract
+%-----------------------------------------------------------------------------------
+\vspace{0.5cm}
+
+\begin{enabstract}
+
+  The English abstract must have have $100$ to $200$ words, and present 
+  the essentials of the article content in a clear and concise form.
+
+\end{enabstract}
+
+%-----------------------------------------------------------------------------------
+% Palabras clave
+%-----------------------------------------------------------------------------------
+\begin{keywords}
+	Separadas,
+	Por,
+	Comas.
+\end{keywords}
+
+%-----------------------------------------------------------------------------------
+% Temas
+%-----------------------------------------------------------------------------------
+\begin{topics}
+	Tema, Subtema.
+\end{topics}
+
+
+%-----------------------------------------------------------------------------------
+% NO BORRAR ESTAS LINEAS!
+%-----------------------------------------------------------------------------------
+\vspace{0.8cm}
+]
+%-----------------------------------------------------------------------------------
+
+
+%===================================================================================
+
+%===================================================================================
+% Resumen Extendido
+%-----------------------------------------------------------------------------------
+
+
+%===================================================================================
+
+\section{Modelación del Problema}
+
+\subsection*{Resumen}
+Este trabajo modela el movimiento de una persona que desciende en paracaídas, considerando la resistencia del aire 
+como una fuerza proporcional a la velocidad. La situación física se describe mediante una ecuación diferencial ordinaria 
+(EDO) de primer orden que relaciona la velocidad del cuerpo con el tiempo. El objetivo es representar matemáticamente 
+la caída, identificar los parámetros involucrados y establecer las condiciones iniciales que caracterizan el proceso.
+
+\subsection*{Contexto físico}
+Cuando un cuerpo cae bajo la acción de la gravedad, su movimiento está influenciado por dos fuerzas principales: el peso, 
+que actúa hacia abajo, y la resistencia del aire, que se opone al movimiento. Si la resistencia es proporcional a la velocidad, 
+el movimiento se rige por la ecuación:
+\begin{equation}
+m \frac{dv}{dt} = -mg - k v,
+\end{equation}
+donde $m$ es la masa del cuerpo, $g$ la aceleración de la gravedad y $k$ el coeficiente de resistencia. Dividiendo entre $m$ 
+se obtiene:
+\begin{equation}
+\frac{dv}{dt} = -g - r v, \quad \text{con } r = \frac{k}{m}.
+\end{equation}
+
+\subsection*{Identificación de parámetros}
+\begin{itemize}
+    \item $g = 32\,ft/s^2$: aceleración de la gravedad en unidades inglesas.
+    \item $r$: coeficiente de resistencia (1/s), diferente antes y después de abrir el paracaídas.
+    \begin{itemize}
+        \item $r_1 = 0.15$: sin paracaídas.
+        \item $r_2 = 1.5$: con paracaídas.
+    \end{itemize}
+    \item $y(t)$: altura (ft).
+    \item $v(t)$: velocidad vertical (ft/s).
+    \item $t_s = 20\,s$: instante en que se abre el paracaídas.
+    \item Condiciones iniciales: $y(0) = 10000\,ft$, $v(0) = 0$.
+\end{itemize}
+
+\subsection*{Representación del problema como EDO}
+El sistema completo de ecuaciones diferenciales que describe el movimiento es:
+\begin{equation}
+\begin{cases}
+\dfrac{dy}{dt} = v(t), \\[6pt]
+\dfrac{dv}{dt} = -g - r(t) v(t),
+\end{cases}
+\end{equation}
+donde
+\begin{equation}
+r(t) =
+\begin{cases}
+r_1, & 0 \le t < t_s, \\[4pt]
+r_2, & t \ge t_s.
+\end{cases}
+\end{equation}
+
+\subsection*{Solución general por tramos}
+La solución de la ecuación diferencial se obtiene separando las variables o usando el método del factor integrante.
+Para cada tramo:
+\begin{align}
+v(t) &= -\frac{g}{r} + \left(v_0 + \frac{g}{r}\right)e^{-r t}, \\[4pt]
+y(t) &= y_0 -\frac{g}{r}t + \left(v_0 + \frac{g}{r}\right)\frac{1 - e^{-r t}}{r}.
+\end{align}
+Dado que $r$ cambia en $t = t_s$, el problema se resuelve en dos etapas:
+\begin{enumerate}
+    \item \textit{Caída libre} ($0 \le t \le t_s$): $r = r_1$.
+    \item \textit{Descenso con paracaídas} ($t \ge t_s$): $r = r_2$, con condiciones iniciales $y(t_s)$ y $v(t_s)$ heredadas del primer tramo.
+\end{enumerate}
+
+\subsection*{Interpretación física}
+La solución muestra que el cuerpo alcanza una velocidad terminal 
+\begin{equation}
+v_T = -\frac{g}{r},
+\end{equation}
+en cada régimen. Cuando el paracaídas se abre, el coeficiente de resistencia aumenta, reduciendo la magnitud de la velocidad terminal 
+y extendiendo el tiempo total de caída. El modelo permite predecir la evolución de la velocidad y la altura con el tiempo, 
+así como estimar el tiempo total de descenso hasta llegar al suelo.
+
+
+
+
+
+%===================================================================================
+
+\section{Análisis del Sistema: Parte B}
+
+\subsection*{1. Puntos de Equilibrio en función de $\mu$}
+
+Consideremos la ecuación diferencial:
+\[
+\frac{dz}{dt} = \mu - z^2.
+\]
+
+Los puntos de equilibrio satisfacen:
+\[
+\frac{dz}{dt} = 0 \quad \Rightarrow \quad \mu - z^2 = 0.
+\]
+
+Por tanto:
+\[
+z^2 = \mu.
+\]
+
+\begin{itemize}
+    \item \textbf{Si $\mu > 0$:} existen dos puntos de equilibrio:
+    \[
+    z = \sqrt{\mu}, \qquad z = -\sqrt{\mu}.
+    \]
+
+    \item \textbf{Si $\mu = 0$:} existe un único punto de equilibrio:
+    \[
+    z = 0.
+    \]
+
+    \item \textbf{Si $\mu < 0$:} no existen puntos de equilibrio reales.
+\end{itemize}
+
+\subsection*{2. Clasificación de Estabilidad}
+
+Para estudiar la estabilidad, derivamos el campo vectorial:
+\[
+\frac{d}{dz}(\mu - z^2) = -2z.
+\]
+
+Evaluamos en los puntos de equilibrio:
+
+\begin{itemize}
+    \item \textbf{Para $\mu > 0$:}
+    \begin{itemize}
+        \item En $z = \sqrt{\mu}$: 
+        \[
+        -2\sqrt{\mu} < 0 \quad \Rightarrow \quad \text{Punto estable}.
+        \]
+        \item En $z = -\sqrt{\mu}$:
+        \[
+        2\sqrt{\mu} > 0 \quad \Rightarrow \quad \text{Punto inestable}.
+        \]
+    \end{itemize}
+
+    \item \textbf{Para $\mu = 0$:}
+    \begin{itemize}
+        \item En $z = 0$:
+        \[
+        0 \quad \Rightarrow \quad \text{Caso crítico}.
+        \]
+    \end{itemize}
+
+\end{itemize}
+
+\subsection*{3. Diagrama de Bifurcación}
+
+El diagrama de bifurcación se describe mediante:
+
+\begin{itemize}
+    \item Eje horizontal: parámetro $\mu$.
+    \item Eje vertical: variable $z$.
+\end{itemize}
+
+Las curvas de equilibrio son:
+\[
+z = \sqrt{\mu} \quad \text{(estable, línea continua)},
+\]
+\[
+z = -\sqrt{\mu} \quad \text{(inestable, línea discontinua)}.
+\]
+
+El punto de bifurcación ocurre en:
+\[
+\mu = 0,
+\]
+y corresponde a una \textbf{bifurcación tipo nodo-silla}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{output.png} % usa el nombre real
+    \caption{Diagrama de Bifurcación.}
+\end{figure}
+
+\subsection*{4. Interpretación Física}
+
+En el contexto de movimiento con resistencia no lineal:
+
+\begin{itemize}
+    \item \textbf{$\mu > 0$:} el sistema alcanza una \textbf{velocidad terminal estable}:
+    \[
+    z = \sqrt{\mu}.
+    \]
+
+    \item \textbf{$\mu = 0$:} se encuentra el umbral o transición crítica entre regímenes dinámicos.
+
+    \item \textbf{$\mu < 0$:} no existe velocidad terminal; el comportamiento dinámico es no acotado.
+\end{itemize}
+
+La bifurcación en $\mu = 0$ marca el punto donde desaparece la posibilidad de equilibrio, separando comportamientos físicos cualitativamente distintos.
+
+
+%===================================================================================
+
+
+
+
+\label{end}
+
+\end{document}
+
+%===================================================================================
