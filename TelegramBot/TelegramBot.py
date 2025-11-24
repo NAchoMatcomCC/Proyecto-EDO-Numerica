@@ -1,7 +1,11 @@
-import telebot
+import sys
+import asyncio
+import aiofiles
+
+from telebot.async_telebot import AsyncTeleBot, asyncio_filters
 import telebot.types as tp
-from telebot.handler_backends import State, StatesGroup
-from telebot.storage import StateMemoryStorage
+from telebot.asyncio_handler_backends import State, StatesGroup
+from telebot.asyncio_storage import StateMemoryStorage
 
 import Interpreter.Lexer as Lx
 import Interpreter.Parser as Ps
@@ -12,10 +16,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 API_TOKEN = "8028863934:AAFxrMjKDNLJ60CoQ2_dtiLcYdRW0dI6HgQ"
 state_storage = StateMemoryStorage()  # In-memory state storage
-bot = telebot.TeleBot(API_TOKEN, state_storage=state_storage)
-
+bot = AsyncTeleBot(API_TOKEN, state_storage=state_storage)
+bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 
 Methods = ['RK4', 'EM', 'Graf']
 Functs = ['Der-Velocidad', 'Distancia', 'Velocidad']
@@ -33,6 +38,11 @@ class MyStates(StatesGroup):
     Isoc = State()
     Zero = State()
 
+
+@bot.message_handler(commands=['stop'])
+async def Stop(message):
+    await bot.send_message(message.chat.id, 'Adios')
+    sys.exit(0)
 
 def VerifyMethod(call):
     for i in Methods:
@@ -54,21 +64,21 @@ def VerifyZeros(call):
 
 
 @bot.message_handler(commands=['start'])
-def Inicialize(message):
+async def Inicialize(message):
     
-    state = bot.get_state(message.from_user.id, message.chat.id)
+    state = await bot.get_state(message.from_user.id, message.chat.id)
     
     if state != MyStates.Inic.name:
-        bot.send_message(message.chat.id, 'Bot corriendo...')
+        await bot.send_message(message.chat.id, 'Bot corriendo...')
     else:
-        bot.send_message(message.chat.id, 'Iniciando parametros por defecto...')
+        await bot.send_message(message.chat.id, 'Iniciando parametros por defecto...')
     
-    bot.set_state(message.from_user.id, MyStates.Inic, message.chat.id)
+    await bot.set_state(message.from_user.id, MyStates.Inic, message.chat.id)
     Data = {'Method': Methods[0], 'Funct': Functs[0], 'Zero': Zeros[0], 'Parameters': []}
     #Crear Script de Funciones Basicas
 
-@bot.message_handler(func= lambda msg : msg.text == '/graf' and bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Inic.name)
-def SelectGrafMethod(msg):
+@bot.message_handler(state = MyStates.Inic, func= lambda msg : msg.text == '/graf')
+async def SelectGrafMethod(msg):
     #Create Markup
     bt1 = tp.InlineKeyboardButton('Euler Mejorado', callback_data='EM')
     bt2 = tp.InlineKeyboardButton('Runge-Kutta 4', callback_data='RK4')
@@ -78,23 +88,23 @@ def SelectGrafMethod(msg):
     markup.add(bt2)
     markup.add(bt3)
     
-    bot.send_message(msg.chat.id, text='Selecciona uno de los siguientes metodos para graficar', reply_markup=markup)
+    await bot.send_message(msg.chat.id, text='Selecciona uno de los siguientes metodos para graficar', reply_markup=markup)
 
-@bot.message_handler(func= lambda msg : msg.text == '/isoclina' and bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Inic.name)
-def IsoclinaListParam(msg):
+@bot.message_handler(state=MyStates.Inic, func= lambda msg : msg.text == '/isoclina')
+async def IsoclinaListParam(msg):
     # XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 0.5, fsize= (10,10), SeeVectors = True, SeeLines = True
     text = '''Introduzca en un mensaje el "valor" los parametros en orden correspondiente separados por coma:\n
             XLeft: Limite Izquierdo en el eje x\n
             XRight: Limite Derecho en el eje x\n
             YDown: Limite Inferior en el eje y\n
             YUp: Limite Superior en el eje y'''
-    bot.send_message(msg.chat.id, text)
-    bot.set_state(msg.from_user.id, MyStates.Isoc, msg.chat.id)
+    await bot.send_message(msg.chat.id, text)
+    await bot.set_state(msg.from_user.id, MyStates.Isoc, msg.chat.id)
 
 @bot.callback_query_handler(func= lambda call : VerifyMethod(call.data))
-def PrintMethodParam(call):
+async def PrintMethodParam(call):
     
-    bot.answer_callback_query(call.id, f'Ejecutando {call.data} para la funcion {Data["Funct"]}')
+    await bot.answer_callback_query(call.id, f'Ejecutando {call.data} para la funcion {Data["Funct"]}')
     Data['Method'] = call.data
     
     text = '''Introduzca en un mensaje el "valor" los parametros en orden correspondiente separados por coma:\n
@@ -105,12 +115,12 @@ def PrintMethodParam(call):
         text += '   y: Coordenada en y del punto inicial\n'
     
     
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, text)
-    bot.set_state(call.from_user.id, MyStates.Param, call.message.chat.id)
+    await bot.answer_callback_query(call.id)
+    await bot.send_message(call.message.chat.id, text)
+    await bot.set_state(call.from_user.id, MyStates.Param, call.message.chat.id)
 
-@bot.message_handler(func= lambda msg : bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Param.name)
-def GetMethodParam(msg):
+@bot.message_handler(state=MyStates.Param)
+async def GetMethodParam(msg):
     
     F = Data['Method']
     
@@ -124,10 +134,10 @@ def GetMethodParam(msg):
         Funct = Tls.Graficar
         Cargs = 2
     
-    ObtainGrafwithParam(msg, Funct, Cargs)
+    await ObtainGrafwithParam(msg, Funct, Cargs)
 
 @bot.message_handler(commands=['select'])
-def SelectFunction(msg):
+async def SelectFunction(msg):
     
     markup = tp.InlineKeyboardMarkup()
     
@@ -138,21 +148,21 @@ def SelectFunction(msg):
     Text = '''Selecciona una de las siguientes funciones:\n
     (Por defecto: "Der-Velocidad")'''
     
-    bot.send_message(msg.chat.id, Text, reply_markup = markup)
+    await bot.send_message(msg.chat.id, Text, reply_markup = markup)
 
 @bot.callback_query_handler(func= lambda call : VerifyFunct(call.data))
-def FunctionQueries(call):
+async def FunctionQueries(call):
     
-    bot.answer_callback_query(call.id, f'{call.data} establecido')
+    await bot.answer_callback_query(call.id, f'{call.data} establecido')
     Data['Funct'] = call.data
 
-@bot.message_handler(func = lambda msg : bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Isoc.name)
-def GetIsocParam(msg):
+@bot.message_handler(state=MyStates.Isoc)
+async def GetIsocParam(msg):
     
-    ObtainGrafwithParam(msg, Tls.Graf_Isoclina, 4)
+    await ObtainGrafwithParam(msg, Tls.Graf_Isoclina, 4)
 
 @bot.message_handler(commands=['zero'])
-def SelectZeroMethod(msg):
+async def SelectZeroMethod(msg):
     #Create Markup
     bt1 = tp.InlineKeyboardButton('Biseccion', callback_data='BS')
     bt2 = tp.InlineKeyboardButton('Biseccion/Interpolacion', callback_data='BIQI')
@@ -164,25 +174,25 @@ def SelectZeroMethod(msg):
     markup.add(bt3)
     markup.add(bt4)
     
-    bot.send_message(msg.chat.id, text='Selecciona uno de los siguientes metodos para hallar una raiz', reply_markup=markup)
+    await bot.send_message(msg.chat.id, text='Selecciona uno de los siguientes metodos para hallar una raiz', reply_markup=markup)
 
 
 @bot.callback_query_handler(func= lambda call : VerifyZeros(call.data))
-def ZerosQueries(call):
+async def ZerosQueries(call):
     
-    bot.answer_callback_query(call.id, f'Ejecutando {call.data} para la funcion {Data["Funct"]}')
+    await bot.answer_callback_query(call.id, f'Ejecutando {call.data} para la funcion {Data["Funct"]}')
     Data['Zero'] = call.data
     
     text = '''Introduzca en un mensaje el "valor" los parametros en orden correspondiente separados por coma:\n
     XLeft: Limite Izquierdo en el eje x\n
     XRight: Limite Derecho en el eje x\n'''
     
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, text)
-    bot.set_state(call.from_user.id, MyStates.Zero, call.message.chat.id)
+    await bot.answer_callback_query(call.id)
+    await bot.send_message(call.message.chat.id, text)
+    await bot.set_state(call.from_user.id, MyStates.Zero, call.message.chat.id)
 
-@bot.message_handler(func= lambda msg : bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Zero.name)
-def SelectZeroMethod(msg):
+@bot.message_handler(state=MyStates.Zero)
+async def SelectZeroMethod(msg):
 
     F = Data['Zero']
     
@@ -199,141 +209,159 @@ def SelectZeroMethod(msg):
         Funct = Tls.RegulaFalsi
         Cargs = 2
     
-    ObtainGrafwithParam(msg, Funct, Cargs)
+    await ObtainGrafwithParam(msg, Funct, Cargs)
 
-
-
-def ObtainGrafwithParam(msg, Funct, CArgs):
+async def ObtainGrafwithParam(msg, Funct, CArgs):
     
-    bot.send_message(msg.chat.id, 'Procesando...')
-    
-    #Excepciones no compatibles
-    if Data['Funct'] == 'Der-Velocidad' and Funct == Tls.Graficar:
-            bot.send_message(msg.chat.id, f'Metodo Grafica no soporta Funciones F(X,Y)')
-            return
-    
+    await bot.send_message(msg.chat.id, 'Procesando...')
     
     #Obtain Text Parameters
     Text = '(' + msg.text + ')'
     #Tokenizar Parameters
     Lexer = Lx.Lexer(Text)
-    Lexer.Tokenize()
+    await asyncio.to_thread(Lexer.Tokenize)
     Tks = Lexer.Tokens
     
     if Lexer.NoErrors == False:
         ErrText = Lexer.MsgErr[0].Error
-        bot.send_message(msg.chat.id, 'Lexer -> ' + ErrText)
+        await bot.send_message(msg.chat.id, 'Lexer -> ' + ErrText)
         return
     
     #Parsear
     Parser = Ps.Parser(Tks)
     Parser.IndexLine = 1
-    Nodes = Parser.__ObtainArgs__(Tks[0])
+    Nodes = await asyncio.to_thread(Parser.__ObtainArgs__, Tks[0])
     
     if Parser.NoErrors == False:
         ErrText = Parser.MsgErr[0].Error
-        bot.send_message(msg.chat.id, 'Parser -> ' + ErrText)
+        await bot.send_message(msg.chat.id, 'Parser -> ' + ErrText)
         return
     
     #Visitor Semantico
     for n in Nodes:
         Visitor = AST.CheckVisitor()
-        if n.Accept(Visitor) == 'Unknow':
+        Val = await asyncio.to_thread(n.Accept, Visitor)
+        
+        if Val == 'Unknow':
             ErrText = Visitor.MsgErr[0].Error
-            bot.send_message(msg.chat.id, 'Check Semantic -> ' + ErrText)
+            await bot.send_message(msg.chat.id, 'Check Semantic -> ' + ErrText)
             return
     
     #Visitor Operacional
     Args = []
     for n in Nodes:
         Visitor = AST.Visitor()
-        Val = n.Accept(Visitor)
+        Val = await asyncio.to_thread(n.Accept, Visitor)
         
         if Visitor.NoErrors == False:
             ErrText = Visitor.MsgErr[0].Error
-            bot.send_message(msg.chat.id, 'Operation -> ' + ErrText)
+            await bot.send_message(msg.chat.id, 'Operation -> ' + ErrText)
         else:
             Args.append(Val)
     
     #Verificar si estan todos los argumentos
     if len(Args) != CArgs:
-        bot.send_message(msg.chat.id, f'Recived Arguments -> Se esperaban {CArgs} argumentos. Se obtuvieron {len(Args)}')
+        await bot.send_message(msg.chat.id, f'Recived Arguments -> Se esperaban {CArgs} argumentos. Se obtuvieron {len(Args)}')
     else:
         
         #Manejo de errores
-        #try:
-        if bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Isoc.name:
-            CallIsoclina(Args)
-        elif bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Param.name:
-                CallGrafMethod(Funct, Args)
-        elif bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Zero.name:
-            CallZero(msg, Funct, Args)
-        # except OverflowError as e:
-        #     bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except ZeroDivisionError as e:
-        #     bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except TypeError as e:
-        #     bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except ValueError as e:
-        #     bot.send_message(msg.chat.id, f'Error -> {e}')
+        Value = False
+        
+        try:
+            if await bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Isoc.name:
+                Value = await CallIsoclina(msg, Args)
+            elif await bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Param.name:
+                Value = await CallGrafMethod(msg, Funct, Args)
+            elif await bot.get_state(msg.from_user.id, msg.chat.id) == MyStates.Zero.name:
+                Value = await CallZero(msg, Funct, Args)
+            
+        except OverflowError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except ZeroDivisionError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except TypeError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except ValueError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
         
         
         #Mostrar Grafica
-        with open('Figura.png', 'rb') as Img:
-            bot.send_photo(msg.chat.id, Img)
+        if Value:
+            async with aiofiles.open('Figura.png', 'rb') as Img:
+                await bot.send_photo(msg.chat.id, Img)
         
-        bot.set_state(msg.from_user.id, MyStates.Inic, msg.chat.id)
+        await bot.set_state(msg.from_user.id, MyStates.Inic, msg.chat.id)
 
+async def CallIsoclina(msg, Args):
+    
+    ParamFunct = Tls.DictFunct[Data['Funct']]
+    
+    if isinstance(ParamFunct, Tls.Derivade):
+        
+        if Args[0] > Args[1]:
+            Val = Args[0]
+            Args[0] = Args[1]
+            Args[1] = Val
+        
+        if Args[2] > Args[3]:
+            Val = Args[2]
+            Args[2] = Args[3]
+            Args[3] = Val
+        
+        await asyncio.to_thread(Tls.Graf_Isoclina, *Args, ParamFunct.Function)
+        return True
+    await bot.send_message(msg.chat.id, f'Operacion no siportada para Funciones del tipo F(x)')
+    return False
 
-
-def CallIsoclina(Args):
+async def CallGrafMethod(msg, F, Args):
+    
+    ParamFunct = Tls.DictFunct[Data['Funct']]
+    
+    
     
     if Args[0] > Args[1]:
         Val = Args[0]
         Args[0] = Args[1]
         Args[1] = Val
     
-    if Args[2] > Args[3]:
-        Val = Args[2]
-        Args[2] = Args[3]
-        Args[3] = Val
+    try:
+        X, Y = await asyncio.to_thread(F, *Args, ParamFunct.Function)
+    except:
+        await bot.send_message(msg.chat.id, f'Operacion no siportada')
     
-    ParamFunct = Tls.DictFunct[Data['Funct']]
-    Tls.Graf_Isoclina(*Args, ParamFunct)
-
-def CallGrafMethod(F, Args):
-    
-    if Args[0] > Args[1]:
-        Val = Args[0]
-        Args[0] = Args[1]
-        Args[1] = Val
-    
-    ParamFunct = Tls.DictFunct[Data['Funct']]
-    X, Y = F(*Args, ParamFunct)
     
     plt.plot(X, Y)
     plt.grid()
     plt.savefig('Figura')
+    return True
 
-def CallZero(msg, F, Args):
-    
-    if Args[0] > Args[1]:
-        Val = Args[0]
-        Args[0] = Args[1]
-        Args[1] = Val
+
+#No se puede llamar para funciones del tipo F(x,y)
+async def CallZero(msg, F, Args):
     
     ParamFunct = Tls.DictFunct[Data['Funct']]
-    x = F(*Args, ParamFunct)
     
-    X, Y = Tls.Graficar(min(Args[0], min(Args[1], x)), max(Args[0], max(Args[1], x)), ParamFunct)
+    if isinstance(ParamFunct, Tls.Normal):
     
-    plt.plot(X, Y)
-    plt.grid()
-    #Cero
-    plt.plot(x, 0, 'bo-')
-    plt.savefig('Figura')
-    
-    bot.send_message(msg.chat.id, f'El cero de la funcion se encuentra en x = {x}')
+        if Args[0] > Args[1]:
+            Val = Args[0]
+            Args[0] = Args[1]
+            Args[1] = Val
+        
+        x = await asyncio.to_thread(F, *Args, ParamFunct.Function)
+        
+        X, Y = await asyncio.to_thread(Tls.Graficar(), min(Args[0], min(Args[1], x)), max(Args[0], max(Args[1], x)), ParamFunct.Function)
+        
+        plt.plot(X, Y)
+        plt.grid()
+        #Cero
+        plt.plot(x, 0, 'bo-')
+        plt.savefig('Figura')
+        
+        await bot.send_message(msg.chat.id, f'El cero de la funcion se encuentra en x = {x}')
+        return True
+    await bot.send_message(msg.chat.id, f'Operacion no siportada para Funciones del tipo F(x,y)')
+    return False
 
 
 
@@ -352,21 +380,26 @@ def CallZero(msg, F, Args):
 
 
 
-@bot.message_handler(commands=['stop'])
-def Stop(message):
-    bot.send_message(message.chat.id, 'Adios')
-    bot.stop_bot()
+
 
 @bot.message_handler(commands=['Ver'])
-def Stop(message):
-    print(bot.get_state(message.from_user.id, message.chat.id) == MyStates.Param.name)
-    print(bot.get_state(message.from_user.id, message.chat.id))
+async def Stop(message):
+    print(await bot.get_state(message.from_user.id, message.chat.id) == MyStates.Param.name)
+    print(await bot.get_state(message.from_user.id, message.chat.id))
 
 
-@bot.message_handler(func= lambda msg : msg.text != '/start' and bot.get_state(msg.from_user.id, msg.chat.id) == None)
-def InicFeedBack(message):
-    bot.send_message(message.chat.id, "Bot no Inicializado. Utilize el comando /start para correr el bot")
+@bot.message_handler(state=None, func= lambda msg : msg.text != '/start')
+async def InicFeedBack(message):
+    await bot.send_message(message.chat.id, "Bot no Inicializado. Utilize el comando /start para correr el bot")
+
+
+
 
 #Never Stop
-if __name__ == '__main__':
-    bot.polling(none_stop=True)
+# Main async entry point
+async def main():
+    print("Bot is running...")
+    await bot.polling(non_stop=True)
+
+if __name__ == "__main__":
+    asyncio.run(main())
