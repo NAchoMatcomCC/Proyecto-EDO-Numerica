@@ -30,6 +30,7 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{caption}
 \usepackage{subcaption}
+
 %-----------------------------------------------------------------------------------
 % Configuración
 %-----------------------------------------------------------------------------------
@@ -48,7 +49,8 @@
 %-----------------------------------------------------------------------------------
 % Título
 %-----------------------------------------------------------------------------------
-\title{Tema 14: Resistencia proporcional a la velocidad y a su cuadrado}
+\title{Proyecto Conjunto: Ecuaciones Diferenciales
+ Ordinarias y Matemática Numérica}
 
 %-----------------------------------------------------------------------------------
 % Autores
@@ -101,8 +103,11 @@
 %-----------------------------------------------------------------------------------
 \begin{abstract}
 
-	El resumen en español debe constar de $100$ a $200$ palabras y presentar de forma
-	clara y concisa el contenido fundamental del artículo.
+	Este trabajo aborda la modelación del movimiento de una persona que desciende en paracaídas, considerando la resistencia del aire como una fuerza proporcional tanto a la velocidad como a su cuadrado, según el régimen de caída. Se establece un sistema de ecuaciones diferenciales ordinarias que describe la evolución temporal de la altura y la velocidad, incorporando un cambio en el coeficiente
+    de resistencia al momento de abrir el paracaídas. El estudio incluye la identificación de los parámetros físicos relevantes, el planteamiento por tramos del modelo y la obtención de soluciones analíticas para cada etapa. Además, se analizan sistemas simplificados asociados, como la ecuación $\dot{z} = \mu - z^2$, explorando sus puntos de equilibrio, estabilidad y diagrama de bifurcación.
+    Finalmente, se examina un sistema lineal que representa la caída con resistencia proporcional, destacando la existencia de velocidad terminal y el
+    comportamiento asintótico de las trayectorias. El análisis conjunto permite comprender de manera integral la dinámica del descenso y sus implicaciones físicas.
+
 
 \end{abstract}
 
@@ -113,8 +118,9 @@
 
 \begin{enabstract}
 
-  The English abstract must have have $100$ to $200$ words, and present 
-  the essentials of the article content in a clear and concise form.
+  This work models the motion of a parachutist descending under gravity, considering air resistance as a force proportional both to velocity and to its square, depending on the stage of the fall. A system of ordinary differential equations is formulated to describe the time evolution of height and velocity, including a change in the drag coefficient at the instant the parachute opens.
+  The study presents the identification of all relevant physical parameters, the piecewise formulation of the model, and the analytical solution on each interval. Additionally, simplified associated systems are examined, such as the equation $\dot{z} = \mu - z^2$, focusing on equilibrium points, stability properties, and the corresponding bifurcation diagram. A linear system representing
+  descent with linear drag is also analyzed, highlighting the existence of a terminal velocity and the asymptotic behavior of trajectories. Altogether, the analysis provides a comprehensive understanding of the dynamics of the fall and its physical implications.
 
 \end{enabstract}
 
@@ -122,16 +128,14 @@
 % Palabras clave
 %-----------------------------------------------------------------------------------
 \begin{keywords}
-	Separadas,
-	Por,
-	Comas.
+	Modelación matemática, Resistencia del aire, Sistemas dinámicos, Velocidad terminal, Bifurcación.
 \end{keywords}
 
 %-----------------------------------------------------------------------------------
 % Temas
 %-----------------------------------------------------------------------------------
 \begin{topics}
-	Tema, Subtema.
+	Tema 14: Resistencia proporcional a la velocidad y a su cuadrado.
 \end{topics}
 
 
@@ -343,6 +347,115 @@ En el contexto de movimiento con resistencia no lineal:
 
 La bifurcación en $\mu = 0$ marca el punto donde desaparece la posibilidad de equilibrio, separando comportamientos físicos cualitativamente distintos.
 
+
+%===================================================================================
+
+
+\section{Análisis del Sistema: Parte C}
+
+\subsection*{Sistema de Ecuaciones}
+
+El sistema considerado es:
+\[
+\begin{aligned}
+\frac{dy}{dt} &= v, \\
+\frac{dv}{dt} &= -32 - 0.5v.
+\end{aligned}
+\]
+
+\subsection*{1. Cálculo de Puntos Críticos}
+
+Los puntos críticos satisfacen:
+\[
+\begin{cases}
+\dfrac{dy}{dt} = 0, \\
+\dfrac{dv}{dt} = 0.
+\end{cases}
+\]
+
+Sustituyendo:
+\[
+\begin{cases}
+v = 0, \\
+-32 - 0.5v = 0.
+\end{cases}
+\]
+
+Resolviendo:
+\begin{itemize}
+    \item De la primera ecuación: $v = 0$.
+    \item Sustituyendo en la segunda:
+    \[
+    -32 - 0.5(0) = -32 \neq 0.
+    \]
+\end{itemize}
+
+\textbf{Conclusión:}  
+El sistema presenta una contradicción ($-32 = 0$), por tanto:
+
+\[
+\boxed{\text{NO EXISTEN PUNTOS CRÍTICOS}}
+\]
+
+\subsection*{2. Análisis del Comportamiento}
+
+La velocidad terminal se obtiene imponiendo:
+\[
+\frac{dv}{dt} = 0 
+\quad \Rightarrow \quad 
+-32 - 0.5v = 0 
+\quad \Rightarrow \quad 
+v = -64 \text{ ft/s}.
+\]
+
+Las líneas nulas son:
+\[
+\frac{dy}{dt} = 0 \quad \text{cuando} \quad v = 0,
+\]
+\[
+\frac{dv}{dt} = 0 \quad \text{cuando} \quad v = -64.
+\]
+
+\subsection*{3. Interpretación Física}
+
+\begin{itemize}
+    \item $\frac{dy}{dt} = v$: define la velocidad vertical.
+    \item $\frac{dv}{dt} = -32 - 0.5v$:
+    \begin{itemize}
+        \item $-32$: aceleración gravitacional constante.
+        \item $-0.5v$: resistencia lineal proporcional a la velocidad.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Comportamiento del sistema:}
+\begin{itemize}
+    \item No existe estado de equilibrio (ningún punto crítico real).
+    \item La velocidad terminal es:
+    \[
+    v = -64 \text{ ft/s}.
+    \]
+    \item Todas las trayectorias del sistema satisfacen:
+    \[
+    v(t) \longrightarrow -64 \quad \text{(convergencia asintótica)}.
+    \]
+\end{itemize}
+
+\subsection*{Diagrama de Fase}
+
+El diagrama de fase se basa en:
+\begin{itemize}
+    \item La línea nula horizontal $v = -64$ (velocidad terminal).
+    \item La línea nula vertical $v = 0$.
+\end{itemize}
+
+Las trayectorias se desplazan verticalmente hacia abajo hasta aproximarse asintóticamente a $v=-64$.
+
+\begin{center}
+    \vspace{-0.3cm}
+    \includegraphics[width=0.5\textwidth]{output1.png}
+    \vspace{-0.2cm}
+    \captionof{figure}{Diagrama de Fase.}
+\end{center}
 
 %===================================================================================
 
