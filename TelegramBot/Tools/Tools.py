@@ -27,7 +27,7 @@ def __Isoclina(Funtion, seg ,lrg, rrg, drg, urg, SeeVectors, SeeLines):
 
 
 #Funcion Portal de Isoclina
-def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 0.5, fsize= (10,10), SeeVectors = True, SeeLines = True):
+def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 2, fsize= (10,10), SeeVectors = True, SeeLines = True):
     
     plt.subplots(figsize=fsize)
     
@@ -247,6 +247,7 @@ def __Velocity__(v0, t, r):
     v = (v0 - vt) * np.e**(-r*t) + vt
     return v
 
+
 def Der_Velocidad(t, v, tp = 20):
     g = 32.174
     r = 0.15
@@ -262,40 +263,42 @@ def D(u,z):
 
 
 
+
+#Class Functions ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Functions:
+    def __init__(self, F):
+        self.Function = F
+
+#Functions of type (F=(X,Y))
+class Derivade(Functions):
+    def __init__(self, F):
+        super().__init__(F)
+
+#Functions of type (F=(X))
+class Normal(Functions):
+    def __init__(self, F):
+        super().__init__(F)
+
+
+
+class DFunctions(Derivade):
+    def __init__(self, F):
+        super().__init__(F)
+
+class NFunction(Normal):
+    def __init__(self, F):
+        super().__init__(F)
+
+class SFunction(Derivade, Normal):
+    def __init__(self, F):
+        super().__init__(F)
+
+
 DictFunct = {
-    'Der-Velocidad': Der_Velocidad,
-    'Distancia': Distancia,
-    'Velocidad': Velocidad
+    'Der-Velocidad': DFunctions(Der_Velocidad),
+    'Distancia': NFunction(Distancia),
+    'Velocidad': SFunction(Velocidad)
 }
 
-
-# def Var(x):
-#     return x**2 - 4 * np.sin(x)
-
-
-
-# X,Y = Graficar(0, 4, Var)
-
-# plt.plot(X,Y)
-# plt.grid()
-
-# a, b = RegulaFalsi(1.5, 3, Var)
-# plt.plot(a, 0, 'bo-')
-# plt.savefig('Figura')
-# print(a, b)
-
-
-# async def S(x):
-    
-#     # Proof(4)
-    
-#     # print('Hello')
-    
-#     # return x**2 - 4 * np.sin(x)
-#     pass
-
-# def Proof(x):
-#     import time
-#     time.sleep(4)
-#     print(f'El numero es: {x}')
 
