@@ -30,6 +30,8 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{adjustbox}
 
 %-----------------------------------------------------------------------------------
 % Configuración
@@ -230,7 +232,361 @@ en cada régimen. Cuando el paracaídas se abre, el coeficiente de resistencia a
 y extendiendo el tiempo total de caída. El modelo permite predecir la evolución de la velocidad y la altura con el tiempo, 
 así como estimar el tiempo total de descenso hasta llegar al suelo.
 
+%===================================================================================
 
+
+
+\section{Análisis teórico (convenio: eje positivo hacia arriba)}
+
+\subsection*{Solución analítica y resultados numéricos}
+
+La ecuación de la velocidad en el régimen lineal es
+\[
+v(t)=v_T^{(1)}+\bigl(v_0-v_T^{(1)}\bigr)e^{-r_1 t},\qquad v_T^{(1)}=-\frac{g}{r_1},
+\]
+y la posición
+\[
+y(t)=y_0+v_T^{(1)}t+\frac{1}{r_1}\bigl(v_0-v_T^{(1)}\bigr)\bigl(1-e^{-r_1 t}\bigr).
+\]
+Con \(g=32\), \(r_1=0.15\), \(r_2=1.5\), \(t_p=20\), \(y_0=10000\), \(v_0=0\) se obtiene:
+\[
+v_T^{(1)}=-\frac{32}{0.15}\approx -213.3333\ \text{ft/s},\qquad
+v_T^{(2)}=-\frac{32}{1.5}\approx -21.3333\ \text{ft/s}.
+\]
+Evaluando en \(t_p=20\) s:
+\[
+v(20)\approx -202.712\ \text{ft/s},\qquad y(20)\approx 7083.748\ \text{ft}.
+\]
+Para \(t\ge t_p\) la altura viene dada por
+\[
+y(t)=y(t_p)+v_T^{(2)}(t-t_p)+\frac{1}{r_2}\bigl(v(t_p)-v_T^{(2)}\bigr)\bigl(1-e^{-r_2(t-t_p)}\bigr),
+\]
+cuya raíz (impacto) es \(t^*\approx 346.383\) s. La velocidad de impacto es
+\(v(t^*)\approx -21.33\) ft/s.
+
+\subsection*{Solución con métodos numéricos}
+
+Método de Newton y Bisección:
+
+\subsection*{Newton}
+
+Se cumplen las hipótesis de convergencia de Newton. La función es continuamente diferenciable en el intervalo [20, 400]:
+\begin{enumerate}[label=(\roman*)]
+    \item $f(a) \cdot f(b) < 0$
+    
+    \[
+    f(20) \approx 7{,}085 \text{ ft (positivo)} \\
+    f(400) \approx -1{,}187 \text{ ft (negativo)}
+    \]
+    
+    Por lo tanto:
+    \[
+    f(20) \cdot f(400) < 0
+    \]
+
+    \item $f'(x) \neq 0$ para todo $x \in [a,b]$
+    
+    \[
+    f'(t) = v(t) \approx -21.45 \text{ ft/s (velocidad terminal con paracaídas)}
+    \]
+    
+    La velocidad nunca es cero durante la caída, siempre es negativa.
+
+    \item $f''(x) \geq 0$ para todo $x \in [a,b]$ o $f''(x) \leq 0$ para todo $x \in [a,b]$
+    
+    \[
+    f''(t) = 273.525 \cdot \exp(-1.5 \cdot (t - 20))
+    \]
+    
+    \[
+    f''(t) > 0 \quad \text{para todo } t \in [20, 400]
+    \]
+    
+    La segunda derivada es siempre positiva en el intervalo.
+
+    \item $|f(a)/f'(a)| < (b - a)$ y $|f(b)/f'(b)| < (b - a)$
+    
+    \[
+    \left|\frac{f(20)}{f'(20)}\right| \approx 34.77 < 380
+    \]
+    
+    \[
+    \left|\frac{f(400)}{f'(400)}\right| \approx 55.36 < 380
+    \]
+\end{enumerate}
+
+
+\begin{table}[h]
+\centering
+\small
+\adjustbox{max width=\columnwidth}{
+\begin{tabular}{cllllll}
+\multicolumn{1}{r}{\textbf{}} & \multicolumn{1}{r}{\textbf{Iteración}} & \multicolumn{1}{r}{\textbf{t\_n}} & \multicolumn{1}{r}{\textbf{F(t\_n)}} & \multicolumn{1}{r}{\textbf{F'(t\_n)}} & \multicolumn{1}{r}{\textbf{t\_\{n+1\}}} & \multicolumn{1}{r}{\textbf{Error}} \\
+\textbf{0}                    & 1                                      & 20.000000                         & 7.068896e+03                         & -203.814339                           & 54.683014                               & 3.468301e+01                       \\
+\textbf{1}                    & 2                                      & 54.683014                         & 6.203391e+03                         & -21.449333                            & 343.894399                              & 2.892114e+02                       \\
+\textbf{2}                    & 3                                      & 343.894399                        & 7.958079e-13                         & -21.449333                            & 343.894399                              & 5.684342e-14                      
+\end{tabular}
+}
+\caption{Iteraciones del método de Newton}
+\end{table}
+
+
+\[
+t_0 = 20.0 \quad \to \quad t_1 = 54.683014 \quad (\text{error} \approx 34.683)
+\]
+
+\[
+t_1 = 54.683014 \to t_2 = 343.894399  (\text{error} \approx 289.2114)
+\]
+
+\[
+t_2 = 343.894399 \quad \to \quad t_3 = 343.894399
+\]
+
+con 
+
+\[
+F(t_2) = 7.958 \times 10^{-13}
+\]
+
+y error 
+
+\[
+5.68 \times 10^{-14}.
+\]
+
+Aquí, el criterio natural es la norma del residuo \( |F(t_n)| \) o el cambio \( |t_{n+1} - t_n| \). En la iteración 3 ya tienes
+
+\[
+|F| \approx 8 \times 10^{-13}
+\]
+
+y error
+
+\[
+\approx 6 \times 10^{-14},
+\]
+
+es decir, prácticamente exacto.
+
+\subsection*{Bisección}
+
+El método de Bisección converge en el intervalo [20, 400]:
+
+\begin{enumerate}[label=(\roman*)]
+    \item $f(a) \cdot f(b) < 0$
+    
+    
+    \begin{align*}
+        f(20) &\approx 7{,}085 \text{ ft (positivo)} \\
+        f(400) &\approx -1{,}187 \text{ ft (negativo)}
+    \end{align*}
+    
+    Por lo tanto:
+    \[
+    f(20) \cdot f(400) < 0
+    \]
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\small
+\adjustbox{max width=\columnwidth}{
+\begin{tabular}{cllllll}
+\multicolumn{1}{r}{\textbf{}} & \multicolumn{1}{r}{\textbf{Iteración}} & \multicolumn{1}{r}{\textbf{a}} & \multicolumn{1}{r}{\textbf{b}} & \multicolumn{1}{r}{\textbf{m}} & \multicolumn{1}{r}{\textbf{F(m)}} & \multicolumn{1}{r}{\textbf{Error}} \\
+\textbf{0}                    & 1                                      & 20.000000                      & 400.000000                     & 210.000000                     & 2.871946e+03                      & 190.000000                         \\
+\textbf{1}                    & 2                                      & 210.000000                     & 400.000000                     & 305.000000                     & 8.342589e+02                      & 95.000000                          \\
+\textbf{2}                    & 3                                      & 305.000000                     & 400.000000                     & 352.500000                     & -1.845844e+02                     & 47.500000                          \\
+\textbf{3}                    & 4                                      & 305.000000                     & 352.500000                     & 328.750000                     & 3.248373e+02                      & 23.750000                          \\
+\textbf{4}                    & 5                                      & 328.750000                     & 352.500000                     & 340.625000                     & 7.012642e+01                      & 11.875000                          \\
+\textbf{5}                    & 6                                      & 340.625000                     & 352.500000                     & 346.562500                     & -5.722899e+01                     & 5.937500                           \\
+\textbf{6}                    & 7                                      & 340.625000                     & 346.562500                     & 343.593750                     & 6.448715e+00                      & 2.968750                           \\
+\textbf{7}                    & 8                                      & 343.593750                     & 346.562500                     & 345.078125                     & -2.539014e+01                     & 1.484375                           \\
+\textbf{8}                    & 9                                      & 343.593750                     & 345.078125                     & 344.335938                     & -9.470712e+00                     & 0.742188                           \\
+\textbf{9}                    & 10                                     & 343.593750                     & 344.335938                     & 343.964844                     & -1.510998e+00                     & 0.371094                           \\
+\textbf{10}                   & 11                                     & 343.593750                     & 343.964844                     & 343.779297                     & 2.468858e+00                      & 0.185547                           \\
+\textbf{11}                   & 12                                     & 343.779297                     & 343.964844                     & 343.872070                     & 4.789299e-01                      & 0.092773                           \\
+\textbf{12}                   & 13                                     & 343.872070                     & 343.964844                     & 343.918457                     & -5.160343e-01                     & 0.046387                           \\
+\textbf{13}                   & 14                                     & 343.872070                     & 343.918457                     & 343.895264                     & -1.855220e-02                     & 0.023193                           \\
+\textbf{14}                   & 15                                     & 343.872070                     & 343.895264                     & 343.883667                     & 2.301888e-01                      & 0.011597                           \\
+\textbf{15}                   & 16                                     & 343.883667                     & 343.895264                     & 343.889465                     & 1.058183e-01                      & 0.005798                           \\
+\textbf{16}                   & 17                                     & 343.889465                     & 343.895264                     & 343.892365                     & 4.363306e-02                      & 0.002899                           \\
+\textbf{17}                   & 18                                     & 343.892365                     & 343.895264                     & 343.893814                     & 1.254043e-02                      & 0.001450                           \\
+\textbf{18}                   & 19                                     & 343.893814                     & 343.895264                     & 343.894539                     & -3.005888e-03                     & 0.000725                           \\
+\textbf{19}                   & 20                                     & 343.893814                     & 343.894539                     & 343.894176                     & 4.767270e-03                      & 0.000362                           \\
+\textbf{20}                   & 21                                     & 343.894176                     & 343.894539                     & 343.894358                     & 8.806906e-04                      & 0.000181                           \\
+\textbf{21}                   & 22                                     & 343.894358                     & 343.894539                     & 343.894448                     & -1.062599e-03                     & 0.000091                           \\
+\textbf{22}                   & 23                                     & 343.894358                     & 343.894448                     & 343.894403                     & -9.095408e-05                     & 0.000045                           \\
+\textbf{23}                   & 24                                     & 343.894358                     & 343.894403                     & 343.894380                     & 3.948683e-04                      & 0.000023                           \\
+\textbf{24}                   & 25                                     & 343.894380                     & 343.894403                     & 343.894392                     & 1.519571e-04                      & 0.000011                           \\
+\textbf{25}                   & 26                                     & 343.894392                     & 343.894403                     & 343.894397                     & 3.050151e-05                      & 0.000006                           \\
+\textbf{26}                   & 27                                     & 343.894397                     & 343.894403                     & 343.894400                     & -3.022629e-05                     & 0.000003                           \\
+\textbf{27}                   & 28                                     & 343.894397                     & 343.894400                     & 343.894399                     & 1.376083e-07                      & 0.000001                          
+\end{tabular}
+}
+\caption{Iteraciones del método de bisección}
+\end{table}
+
+La columna \textit{Error} es la semi-longitud del intervalo 
+\[
+\frac{b - a}{2}.
+\] 
+
+Se observa que ese «Error» baja hasta 
+\[
+1.0 \times 10^{-6}
+\]
+en la fila marcada como iteración 28 (aproximadamente). Antes, en la iteración 27 era 
+\[
+2.0 \times 10^{-6}.
+\] 
+
+Por tanto, con la tolerancia usada en la ejecución (aproximadamente \(10^{-6}\)) la bisección cumple el criterio en la iteración 28.
+
+\subsection*{Comparaci'on}
+
+Newton tiene convergencia cuád­ratica cerca de la raíz, por eso alcanza precisión extrema en pocas iteraciones. 
+Bisección converge linealmente, por eso necesita muchas más iteraciones para la misma tolerancia. 
+En la comparación de métodos numéricos para determinar el instante de impacto, se observó un comportamiento 
+marcadamente diferente entre el método de Newton y el método de bisección. 
+Con la tolerancia utilizada (\(10^{-6}\)), el método de Newton alcanzó la convergencia en 3 iteraciones, 
+gracias a su naturaleza de convergencia cuadrática, que permite reducir drásticamente el error una vez 
+que el punto inicial se encuentra en la vecindad de la raíz. En contraste, el método 
+de bisección — caracterizado por su convergencia lineal — requirió 28 iteraciones para lograr un nivel 
+de precisión comparable. Este resultado refleja la diferencia fundamental entre ambos 
+enfoques: Newton es extremadamente eficiente cuando la función es suave y se dispone de una buena 
+primera aproximación, mientras que la bisección 
+ofrece robustez pero a costa de una velocidad de convergencia considerablemente menor.
+
+\section*{Complejidad Computacional de los Métodos Numéricos}
+
+\textbf{Método de Newton:}
+
+\begin{itemize}
+    \item Convergencia cuadrática: el error se reduce aproximadamente al cuadrado en cada iteración.
+    \item Número de iteraciones para alcanzar una precisión \(\varepsilon\) es 
+    \[
+    O\left(\log \log \frac{1}{\varepsilon}\right).
+    \]
+    \item Costo por iteración depende de la evaluación de la función y su derivada, denotado como \(O(C_f + C_{f'})\).
+    \item Por lo tanto, la complejidad total es:
+    \[
+    O\left( (C_f + C_{f'}) \cdot \log \log \frac{1}{\varepsilon} \right).
+    \]
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Método de Bisección:}
+
+\begin{itemize}
+    \item Convergencia lineal: el error se reduce a la mitad en cada iteración.
+    \item Número de iteraciones para alcanzar una precisión \(\varepsilon\) es
+    \[
+    O\left(\log \frac{1}{\varepsilon}\right).
+    \]
+    \item Costo por iteración es solo la evaluación de la función, denotado como \(O(C_f)\).
+    \item Por lo tanto, la complejidad total es:
+    \[
+    O\left( C_f \cdot \log \frac{1}{\varepsilon} \right).
+    \]
+\end{itemize}
+
+
+\subsection*{Planteamiento general}
+Tomamos como variable de estado la velocidad vertical \(v(t)\) (positiva hacia arriba) y la altura \(y(t)\). El sistema es
+\[
+\begin{cases}
+\dot y = v,\\[4pt]
+\dot v = f(t,v),
+\end{cases}
+\qquad
+y(0)=y_0,\; v(0)=v_0,
+\]
+donde el campo \(f\) viene dado por tramos según el instante \(t_p\) de apertura del paracaídas:
+\[
+f(t,v)=
+\begin{cases}
+-\,g - r_1 v, & 0 \le t < t_p,\\[6pt]
+-\,g - r_2 v|v|, & t \ge t_p,
+\end{cases}
+\]
+con \(g>0\) y \(r_1,r_2>0\). (Obs.: la notación \(r_i=k_i/m\) se comprende como coeficiente de amortiguamiento por unidad de masa.)
+
+\subsection*{Existencia y unicidad}
+Las funciones involucradas son continuas en \(v\) y, sobre intervalos acotados, admiten derivadas finitas con respecto a \(v\). Además, la resistencia actúa siempre en sentido opuesto al movimiento, lo que impide crecimientos explosivos de la velocidad. Por tanto, para cualquier condición inicial dadas, la solución por tramos existe, es única y puede concatenarse en \(t=t_p\) imponiendo continuidad del estado:
+\[
+v(t_p^+)=v(t_p^-),\qquad y(t_p^+)=y(t_p^-).
+\]
+
+\subsection*{Velocidades terminales y estabilidad local}
+En cada tramo existe un valor de \(v\) que anula la aceleración (velocidad terminal):
+
+\[
+\text{Tramo lineal:}\quad -g - r_1 v = 0 \quad\Longrightarrow\quad v_T^{(1)} = -\frac{g}{r_1}.
+\]
+
+\[
+\begin{aligned}
+&\text{Tramo cuadrático (considerando caída con } v<0\text{):} \\
+&-g - r_2 v|v| =0.
+\end{aligned}
+\]
+Para \(v<0\) se tiene \(v|v|=-v^2\), de modo que la ecuación se reduce a \(-g + r_2 v^2 = 0\), y la velocidad terminal física (negativa) es
+\[
+v_T^{(2)} = -\sqrt{\frac{g}{r_2}}.
+\]
+
+Para estudiar la estabilidad local, analizamos el signo de la derivada de \(f\) respecto de \(v\):
+\[
+\partial_v f(t,v)=
+\begin{cases}
+- r_1, & \text{(lineal)},\\[4pt]
+-2 r_2 v, & \text{(cuadrático)}.
+\end{cases}
+\]
+Evaluando en las velocidades terminales (recordando \(v_T^{(i)}<0\)):
+
+\begin{align*}
+\partial_v f|_{v_T^{(1)}} &= -r_1 < 0, \\
+\partial_v f|_{v_T^{(2)}} &= -2 r_2 v_T^{(2)} = -2 r_2 \big(-\sqrt{g/r_2}\big) = -2\sqrt{g r_2} < 0.
+\end{align*}
+
+
+Ambas derivadas son negativas, por lo que los puntos \(v_T^{(1)}\) y \(v_T^{(2)}\) son \emph{linealmente asintóticamente estables}: las trayectorias en \(v\) se acercan a dichos valores cuando el tiempo avanza en el tramo correspondiente.
+
+
+\subsection*{Comportamiento cualitativo e interpretación de signos}
+Dado que \(v_T^{(i)}<0\), la dinámica empuja la velocidad hacia valores más negativos si está por encima del terminal (más cerca de cero), o hacia valores menos negativos si está por debajo (más lejos de cero). Formalmente:
+
+\begin{itemize}
+  \item Si \(v > v_T\) (es decir, \(v\) menos negativo que \(v_T\)), entonces \(\dot v < 0\) y \(v\) disminuye hasta acercarse a \(v_T\).
+  \item Si \(v < v_T\) (más negativo que \(v_T\)), entonces \(\dot v > 0\) y \(v\) aumenta (se vuelve menos negativo) hasta acercarse a \(v_T\).
+\end{itemize}
+
+Así, el signo negativo de \(v_T\) refleja que la caída ocurre en dirección negativa del eje elegido.
+
+\subsection*{Isoclinas e información cualitativa}
+Las \emph{isoclinas} se definen fijando valores constantes de \(\dot v\). La \emph{isoclina nula} (línea donde \(\dot v=0\)) es especialmente útil:
+
+\[
+\dot v=0\quad\Rightarrow\quad
+\begin{cases}
+v = -\dfrac{g}{r_1}, & 0\le t < t_p,\\[8pt]
+v = -\sqrt{\dfrac{g}{r_2}}, & t \ge t_p.
+\end{cases}
+\]
+
+En el plano \((t,v)\) estas son líneas horizontales (con valores negativos) que separan regiones de \(\dot v>0\) y \(\dot v<0\). El campo de direcciones muestra que las flechas apuntan hacia la respectiva línea nula en cada tramo: antes de \(t_p\) las trayectorias se acercan a \(v_T^{(1)}\), y tras \(t_p\) al nuevo valor \(v_T^{(2)}\). Dado que \(r_2\gg r_1\) en el caso físico de apertura del paracaídas, se cumple \(|v_T^{(2)}|\ll |v_T^{(1)}|\) y la transición en \(t_p\) provoca una desaceleración rápida hacia el nuevo equilibrio negativo.
+
+\subsection*{Efecto del cambio de régimen en \(t_p\)}
+El cambio en \(t_p\) es puramente temporal (no depende del estado), por lo que la solución se obtiene concatenando la solución única del primer tramo con la del segundo tramo usando las condiciones de continuidad en \(t_p\). No aparecen discontinuidades en \(v\) ni ambigüedades tipo sistemas con frontera dependiente del estado.
+
+\subsection*{Condicionamiento y robustez}
+La atracción asintótica hacia los equilibrios implica que pequeñas perturbaciones en las condiciones iniciales o en parámetros producen diferencias que se atenúan con el tiempo: el problema es cualitativamente bien condicionado. Esto facilita tanto la interpretación física como la aproximación numérica de la solución.
+
+\subsection*{Conclusión}
+Las ecuaciones diferenciales, las velocidades terminales y la interpretación geométrica mediante isoclinas concuerdan entre sí y explican por qué la apertura del paracaídas produce una rápida transición hacia una velocidad terminal negativa de menor magnitud absoluta.
 
 
 
