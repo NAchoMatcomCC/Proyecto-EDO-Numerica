@@ -33,6 +33,9 @@
 \usepackage{enumitem}
 \usepackage{adjustbox}
 
+
+
+
 %-----------------------------------------------------------------------------------
 % Configuración
 %-----------------------------------------------------------------------------------
@@ -74,7 +77,7 @@
 %-----------------------------------------------------------------------------------
 % Headings
 %-----------------------------------------------------------------------------------
-\jcematcomheading{\the\year}{1-\pageref{end}}{A. Uno, A. Dos}
+\jcematcomheading{\the\year}{1-\pageref{end}}
 
 %-----------------------------------------------------------------------------------
 
@@ -443,7 +446,7 @@ en la fila marcada como iteración 28 (aproximadamente). Antes, en la iteración
 
 Por tanto, con la tolerancia usada en la ejecución (aproximadamente \(10^{-6}\)) la bisección cumple el criterio en la iteración 28.
 
-\subsection*{Comparaci'on}
+\subsection*{Comparación}
 
 Newton tiene convergencia cuád­ratica cerca de la raíz, por eso alcanza precisión extrema en pocas iteraciones. 
 Bisección converge linealmente, por eso necesita muchas más iteraciones para la misma tolerancia. 
@@ -812,6 +815,10 @@ Las trayectorias se desplazan verticalmente hacia abajo hasta aproximarse asint�
     \vspace{-0.2cm}
     \captionof{figure}{Diagrama de Fase.}
 \end{center}
+
+\section {Apendice}
+
+Para la realización de este trabajo se emplearon scripts y programas (escritos fundamentalmente en Python) que pueden encontrarse en el \href{https://github.com/NAchoMatcomCC/Proyecto-EDO-Numerica.git}{Repositorio en GitHub}. Adicionalmente se desarrolló un bot de Telegram que facilita la visualización de los resultados para diferentes parámetros, el código del mismo se encuentra en el mismo repositorio.
 
 %===================================================================================
 
