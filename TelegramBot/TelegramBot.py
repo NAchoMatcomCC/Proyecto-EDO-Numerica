@@ -342,7 +342,6 @@ async def CallGrafMethod(msg, F, Args):
     except:
         await bot.send_message(msg.chat.id, f'Operacion no siportada')
     
-    plt.subplots(figsize=(10,10))
     plt.plot(X, Y)
     plt.grid()
     plt.savefig('Figura')
@@ -367,10 +366,10 @@ async def CallZero(msg, F, Args):
             pass
         
         x = await asyncio.to_thread(F, *Args, ParamFunct.Function)
+        x = min(x)
         
         X, Y = await asyncio.to_thread(Tls.Graficar, min([min(Args), x]), max([max(Args), x]), ParamFunct.Function)
         
-        plt.subplots(figsize=(10,10))
         plt.plot(X, Y)
         plt.grid()
         #Cero
