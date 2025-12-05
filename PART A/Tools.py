@@ -224,7 +224,7 @@ def Distancia(t, x0 = 10000, v0 = 0, tp = 20):
     return x
 
 def __Distance__(x0,v0,t,r):
-    g = 32.174
+    g = 32
     vt = -g/r
     x = x0 + vt*t + 1/r * (v0 - vt) * (1 - np.e**(-r*t))
     return x
@@ -242,14 +242,14 @@ def Velocidad(t, y = 0, v0 = 0, tp = 20):
     return v
 
 def __Velocity__(v0, t, r):
-    g = 32.174
+    g = 32
     vt = -g/r
     v = (v0 - vt) * np.e**(-r*t) + vt
     return v
 
 
 def Der_Velocidad(t, v, tp = 20):
-    g = 32.174
+    g = 32
     r = 0.15
     
     if t >= tp:

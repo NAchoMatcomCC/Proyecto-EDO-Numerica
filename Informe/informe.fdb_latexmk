@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1764520723.36099 "d:/Universidad/MATCOM/Segundoaño/Proyecto_EDO-Numérica/Proyecto-EDO-Numerica/Informe/informe.tex" "informe.pdf" "informe" 1764520727.06224 0
+["pdflatex"] 1764955270.78866 "d:/Universidad/MATCOM/Segundoaño/Proyecto_EDO-Numérica/Proyecto-EDO-Numerica/Informe/informe.tex" "informe.pdf" "informe" 1764955275.88166 0
   "C:/Users/05ign/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1764517104 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/05ign/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1763963887 8268 ca7f5e01b95c5f92304c733e1761e6af ""
   "C:/Users/05ign/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1763966669 11548 4e769c5d6d14eeac9c02ddc6310d05cc ""
@@ -134,10 +134,10 @@
   "C:/Users/05ign/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/05ign/AppData/Local/Programs/MiKTeX/tex/latex/varwidth/varwidth.sty" 1238469540 10894 d359a13923460b2a73d4312d613554c8 ""
   "C:/Users/05ign/AppData/Local/Programs/MiKTeX/tex/latex/xkeyval/xkeyval.sty" 1656236919 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "d:/Universidad/MATCOM/Segundoaño/Proyecto_EDO-Numérica/Proyecto-EDO-Numerica/Informe/informe.tex" 1764520716 36636 05f617d88d774e27f601206a65796e7b ""
-  "informe.aux" 1764520726 1620 f8b1cdcf3caf30268b14488527fa2c95 "pdflatex"
-  "informe.out" 1764520726 916 ab6d8a27cdc290eb282c24ea7738b62a "pdflatex"
-  "informe.tex" 1764520716 36636 05f617d88d774e27f601206a65796e7b ""
+  "d:/Universidad/MATCOM/Segundoaño/Proyecto_EDO-Numérica/Proyecto-EDO-Numerica/Informe/informe.tex" 1764955267 37818 26dd9bcbed133ca50ea371356ba961de ""
+  "informe.aux" 1764955274 1727 ecbd175fee60c5ab525a9438f731a2e3 "pdflatex"
+  "informe.out" 1764955274 1002 23a945bb0a5a16f48fc92433fc84e061 "pdflatex"
+  "informe.tex" 1764955267 37818 26dd9bcbed133ca50ea371356ba961de ""
   "jcematcom.sty" 1725968299 12211 19d2dc953da13398ceaac43a75a5d0ce ""
   "output.png" 1763999362 24344 c2e846d4935a06c6ae2357c4737279f6 ""
   "output1.png" 1763999411 139396 1bf01c995825cd2d13d016181384fdca ""

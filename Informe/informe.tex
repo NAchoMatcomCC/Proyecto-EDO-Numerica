@@ -77,7 +77,7 @@
 %-----------------------------------------------------------------------------------
 % Headings
 %-----------------------------------------------------------------------------------
-\jcematcomheading{\the\year}{1-\pageref{end}}
+\jcematcomheading{\the\year}{1-\pageref{end}}{}
 
 %-----------------------------------------------------------------------------------
 
@@ -258,13 +258,13 @@ v_T^{(2)}=-\frac{32}{1.5}\approx -21.3333\ \text{ft/s}.
 \]
 Evaluando en \(t_p=20\) s:
 \[
-v(20)\approx -202.712\ \text{ft/s},\qquad y(20)\approx 7083.748\ \text{ft}.
+v(20)\approx -202.712\ \text{ft/s},\qquad y(20)\approx 7084.748\ \text{ft}.
 \]
 Para \(t\ge t_p\) la altura viene dada por
 \[
 y(t)=y(t_p)+v_T^{(2)}(t-t_p)+\frac{1}{r_2}\bigl(v(t_p)-v_T^{(2)}\bigr)\bigl(1-e^{-r_2(t-t_p)}\bigr),
 \]
-cuya raíz (impacto) es \(t^*\approx 346.383\) s. La velocidad de impacto es
+cuya raíz (impacto) es \(t^*\approx 346.429\) s. La velocidad de impacto es
 \(v(t^*)\approx -21.33\) ft/s.
 
 \subsection*{Solución con métodos numéricos}
@@ -318,16 +318,15 @@ Se cumplen las hipótesis de convergencia de Newton. La función es continuament
     \]
 \end{enumerate}
 
-
 \begin{table}[h]
 \centering
 \small
 \adjustbox{max width=\columnwidth}{
 \begin{tabular}{cllllll}
 \multicolumn{1}{r}{\textbf{}} & \multicolumn{1}{r}{\textbf{Iteración}} & \multicolumn{1}{r}{\textbf{t\_n}} & \multicolumn{1}{r}{\textbf{F(t\_n)}} & \multicolumn{1}{r}{\textbf{F'(t\_n)}} & \multicolumn{1}{r}{\textbf{t\_\{n+1\}}} & \multicolumn{1}{r}{\textbf{Error}} \\
-\textbf{0}                    & 1                                      & 20.000000                         & 7.068896e+03                         & -203.814339                           & 54.683014                               & 3.468301e+01                       \\
-\textbf{1}                    & 2                                      & 54.683014                         & 6.203391e+03                         & -21.449333                            & 343.894399                              & 2.892114e+02                       \\
-\textbf{2}                    & 3                                      & 343.894399                        & 7.958079e-13                         & -21.449333                            & 343.894399                              & 5.684342e-14                      
+\textbf{0}                    & 1                                      & 20.000000                         & 7.084747e+03                         & -202.712092                           & 54.949801                               & 34.949801                          \\
+\textbf{1}                    & 2                                      & 54.949801                         & 6.218232e+03                         & -21.333333                            & 346.429443                              & 291.479642                         \\
+\textbf{2}                    & 3                                      & 346.429443                        & -4.263256e-13                        & -21.333333                            & 346.429443                              & 0.000000                          
 \end{tabular}
 }
 \caption{Iteraciones del método de Newton}
@@ -335,42 +334,20 @@ Se cumplen las hipótesis de convergencia de Newton. La función es continuament
 
 
 \[
-t_0 = 20.0 \quad \to \quad t_1 = 54.683014 \quad (\text{error} \approx 34.683)
+t_0 = 20.0 \quad \to \quad t_1 = 54.949801 \quad (\text{error} \approx 34.949801)
 \]
 
 \[
-t_1 = 54.683014 \to t_2 = 343.894399  (\text{error} \approx 289.2114)
+t_1 = 54.949801 \to t_2 = 346.429443  (\text{error} \approx 291.479642)
 \]
 
 \[
-t_2 = 343.894399 \quad \to \quad t_3 = 343.894399
+t_2 = 346.429443 \quad \to \quad t_3 = 346.429443
 \]
 
-con 
+con error 0
 
-\[
-F(t_2) = 7.958 \times 10^{-13}
-\]
 
-y error 
-
-\[
-5.68 \times 10^{-14}.
-\]
-
-Aquí, el criterio natural es la norma del residuo \( |F(t_n)| \) o el cambio \( |t_{n+1} - t_n| \). En la iteración 3 ya tienes
-
-\[
-|F| \approx 8 \times 10^{-13}
-\]
-
-y error
-
-\[
-\approx 6 \times 10^{-14},
-\]
-
-es decir, prácticamente exacto.
 
 \subsection*{Bisección}
 
@@ -397,34 +374,34 @@ El método de Bisección converge en el intervalo [20, 400]:
 \adjustbox{max width=\columnwidth}{
 \begin{tabular}{cllllll}
 \multicolumn{1}{r}{\textbf{}} & \multicolumn{1}{r}{\textbf{Iteración}} & \multicolumn{1}{r}{\textbf{a}} & \multicolumn{1}{r}{\textbf{b}} & \multicolumn{1}{r}{\textbf{m}} & \multicolumn{1}{r}{\textbf{F(m)}} & \multicolumn{1}{r}{\textbf{Error}} \\
-\textbf{0}                    & 1                                      & 20.000000                      & 400.000000                     & 210.000000                     & 2.871946e+03                      & 190.000000                         \\
-\textbf{1}                    & 2                                      & 210.000000                     & 400.000000                     & 305.000000                     & 8.342589e+02                      & 95.000000                          \\
-\textbf{2}                    & 3                                      & 305.000000                     & 400.000000                     & 352.500000                     & -1.845844e+02                     & 47.500000                          \\
-\textbf{3}                    & 4                                      & 305.000000                     & 352.500000                     & 328.750000                     & 3.248373e+02                      & 23.750000                          \\
-\textbf{4}                    & 5                                      & 328.750000                     & 352.500000                     & 340.625000                     & 7.012642e+01                      & 11.875000                          \\
-\textbf{5}                    & 6                                      & 340.625000                     & 352.500000                     & 346.562500                     & -5.722899e+01                     & 5.937500                           \\
-\textbf{6}                    & 7                                      & 340.625000                     & 346.562500                     & 343.593750                     & 6.448715e+00                      & 2.968750                           \\
-\textbf{7}                    & 8                                      & 343.593750                     & 346.562500                     & 345.078125                     & -2.539014e+01                     & 1.484375                           \\
-\textbf{8}                    & 9                                      & 343.593750                     & 345.078125                     & 344.335938                     & -9.470712e+00                     & 0.742188                           \\
-\textbf{9}                    & 10                                     & 343.593750                     & 344.335938                     & 343.964844                     & -1.510998e+00                     & 0.371094                           \\
-\textbf{10}                   & 11                                     & 343.593750                     & 343.964844                     & 343.779297                     & 2.468858e+00                      & 0.185547                           \\
-\textbf{11}                   & 12                                     & 343.779297                     & 343.964844                     & 343.872070                     & 4.789299e-01                      & 0.092773                           \\
-\textbf{12}                   & 13                                     & 343.872070                     & 343.964844                     & 343.918457                     & -5.160343e-01                     & 0.046387                           \\
-\textbf{13}                   & 14                                     & 343.872070                     & 343.918457                     & 343.895264                     & -1.855220e-02                     & 0.023193                           \\
-\textbf{14}                   & 15                                     & 343.872070                     & 343.895264                     & 343.883667                     & 2.301888e-01                      & 0.011597                           \\
-\textbf{15}                   & 16                                     & 343.883667                     & 343.895264                     & 343.889465                     & 1.058183e-01                      & 0.005798                           \\
-\textbf{16}                   & 17                                     & 343.889465                     & 343.895264                     & 343.892365                     & 4.363306e-02                      & 0.002899                           \\
-\textbf{17}                   & 18                                     & 343.892365                     & 343.895264                     & 343.893814                     & 1.254043e-02                      & 0.001450                           \\
-\textbf{18}                   & 19                                     & 343.893814                     & 343.895264                     & 343.894539                     & -3.005888e-03                     & 0.000725                           \\
-\textbf{19}                   & 20                                     & 343.893814                     & 343.894539                     & 343.894176                     & 4.767270e-03                      & 0.000362                           \\
-\textbf{20}                   & 21                                     & 343.894176                     & 343.894539                     & 343.894358                     & 8.806906e-04                      & 0.000181                           \\
-\textbf{21}                   & 22                                     & 343.894358                     & 343.894539                     & 343.894448                     & -1.062599e-03                     & 0.000091                           \\
-\textbf{22}                   & 23                                     & 343.894358                     & 343.894448                     & 343.894403                     & -9.095408e-05                     & 0.000045                           \\
-\textbf{23}                   & 24                                     & 343.894358                     & 343.894403                     & 343.894380                     & 3.948683e-04                      & 0.000023                           \\
-\textbf{24}                   & 25                                     & 343.894380                     & 343.894403                     & 343.894392                     & 1.519571e-04                      & 0.000011                           \\
-\textbf{25}                   & 26                                     & 343.894392                     & 343.894403                     & 343.894397                     & 3.050151e-05                      & 0.000006                           \\
-\textbf{26}                   & 27                                     & 343.894397                     & 343.894403                     & 343.894400                     & -3.022629e-05                     & 0.000003                           \\
-\textbf{27}                   & 28                                     & 343.894397                     & 343.894400                     & 343.894399                     & 1.376083e-07                      & 0.000001                          
+\textbf{0}                    & 1                                      & 20.000000                      & 400.000000                     & 210.000000                     & 2.910495e+03                      & 190.000000                         \\
+\textbf{1}                    & 2                                      & 210.000000                     & 400.000000                     & 305.000000                     & 8.838281e+02                      & 95.000000                          \\
+\textbf{2}                    & 3                                      & 305.000000                     & 400.000000                     & 352.500000                     & -1.295052e+02                     & 47.500000                          \\
+\textbf{3}                    & 4                                      & 305.000000                     & 352.500000                     & 328.750000                     & 3.771614e+02                      & 23.750000                          \\
+\textbf{4}                    & 5                                      & 328.750000                     & 352.500000                     & 340.625000                     & 1.238281e+02                      & 11.875000                          \\
+\textbf{5}                    & 6                                      & 340.625000                     & 352.500000                     & 346.562500                     & -2.838559e+00                     & 5.937500                           \\
+\textbf{6}                    & 7                                      & 340.625000                     & 346.562500                     & 343.593750                     & 6.049477e+01                      & 2.968750                           \\
+\textbf{7}                    & 8                                      & 343.593750                     & 346.562500                     & 345.078125                     & 2.882811e+01                      & 1.484375                           \\
+\textbf{8}                    & 9                                      & 345.078125                     & 346.562500                     & 345.820312                     & 1.299477e+01                      & 0.742188                           \\
+\textbf{9}                    & 10                                     & 345.820312                     & 346.562500                     & 346.191406                     & 5.078108e+00                      & 0.371094                           \\
+\textbf{10}                   & 11                                     & 346.191406                     & 346.562500                     & 346.376953                     & 1.119775e+00                      & 0.185547                           \\
+\textbf{11}                   & 12                                     & 346.376953                     & 346.562500                     & 346.469727                     & -8.593920e-01                     & 0.092773                           \\
+\textbf{12}                   & 13                                     & 346.376953                     & 346.469727                     & 346.423340                     & 1.301914e-01                      & 0.046387                           \\
+\textbf{13}                   & 14                                     & 346.423340                     & 346.469727                     & 346.446533                     & -3.646003e-01                     & 0.023193                           \\
+\textbf{14}                   & 15                                     & 346.423340                     & 346.446533                     & 346.434937                     & -1.172045e-01                     & 0.011597                           \\
+\textbf{15}                   & 16                                     & 346.423340                     & 346.434937                     & 346.429138                     & 6.493461e-03                      & 0.005798                           \\
+\textbf{16}                   & 17                                     & 346.429138                     & 346.434937                     & 346.432037                     & -5.535550e-02                     & 0.002899                           \\
+\textbf{17}                   & 18                                     & 346.429138                     & 346.432037                     & 346.430588                     & -2.443102e-02                     & 0.001450                           \\
+\textbf{18}                   & 19                                     & 346.429138                     & 346.430588                     & 346.429863                     & -8.968778e-03                     & 0.000725                           \\
+\textbf{19}                   & 20                                     & 346.429138                     & 346.429863                     & 346.429501                     & -1.237658e-03                     & 0.000362                           \\
+\textbf{20}                   & 21                                     & 346.429138                     & 346.429501                     & 346.429319                     & 2.627901e-03                      & 0.000181                           \\
+\textbf{21}                   & 22                                     & 346.429319                     & 346.429501                     & 346.429410                     & 6.951215e-04                      & 0.000091                           \\
+\textbf{22}                   & 23                                     & 346.429410                     & 346.429501                     & 346.429455                     & -2.712685e-04                     & 0.000045                           \\
+\textbf{23}                   & 24                                     & 346.429410                     & 346.429455                     & 346.429433                     & 2.119265e-04                      & 0.000023                           \\
+\textbf{24}                   & 25                                     & 346.429433                     & 346.429455                     & 346.429444                     & -2.967097e-05                     & 0.000011                           \\
+\textbf{25}                   & 26                                     & 346.429433                     & 346.429444                     & 346.429438                     & 9.112778e-05                      & 0.000006                           \\
+\textbf{26}                   & 27                                     & 346.429438                     & 346.429444                     & 346.429441                     & 3.072841e-05                      & 0.000003                           \\
+\textbf{27}                   & 28                                     & 346.429441                     & 346.429444                     & 346.429443                     & 5.287198e-07                      & 0.000001                          
 \end{tabular}
 }
 \caption{Iteraciones del método de bisección}
@@ -478,7 +455,9 @@ ofrece robustez pero a costa de una velocidad de convergencia considerablemente 
     \]
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{2.0cm}
+
+
 
 \textbf{Método de Bisección:}
 
@@ -706,6 +685,13 @@ En el contexto de movimiento con resistencia no lineal:
 
 La bifurcación en $\mu = 0$ marca el punto donde desaparece la posibilidad de equilibrio, separando comportamientos físicos cualitativamente distintos.
 
+\subsection*{4.1 Comportamiento fuera del intervalo de estabilidad}
+
+Para \( \mu > 0 \), si la condición inicial \( z_0 \) se encuentra por debajo del punto crítico inestable \( z = -\sqrt{\mu} \), el campo vectorial
+\[ 
+\dot{z} = \mu - z^2 
+\]  
+toma valores negativos, lo que implica que \( z(t) \) decrece indefinidamente. En este régimen, la solución se aleja del equilibrio y diverge hacia \( -\infty \) en un tiempo finito. Este fenómeno, conocido como explosión en tiempo finito, indica que el modelo pierde validez física fuera del dominio de atracción del equilibrio estable. Por tanto, es esencial restringir el análisis a condiciones iniciales dentro del intervalo \( (-\sqrt{\mu}, \sqrt{\mu}) \), donde el comportamiento dinámico es acotado y físicamente interpretable.
 
 %===================================================================================
 
@@ -816,9 +802,9 @@ Las trayectorias se desplazan verticalmente hacia abajo hasta aproximarse asint�
     \captionof{figure}{Diagrama de Fase.}
 \end{center}
 
-\section {Apendice}
+\section {Apéndice}
 
-Para la realización de este trabajo se emplearon scripts y programas (escritos fundamentalmente en Python) que pueden encontrarse en el \href{https://github.com/NAchoMatcomCC/Proyecto-EDO-Numerica.git}{Repositorio en GitHub}. Adicionalmente se desarrolló un bot de Telegram que facilita la visualización de los resultados para diferentes parámetros, el código del mismo se encuentra en el mismo repositorio.
+Para la realización de este trabajo se emplearon scripts y programas (escritos fundamentalmente en Python) que pueden encontrarse en el \href{https://github.com/NAchoMatcomCC/Proyecto-EDO-Numerica.git}{Repositorio en GitHub}. Adicionalmente se desarrolló un bot de Telegram que facilita la visualización de los resultados para diferentes parámetros, el código del mismo se encuentra en el mismo repositorio. Usuario del bot:\href{https://t.me/EDOMNProjectbot}{@EDOMNProjectbot}. Para el uso del bot ejecutar el archivo TelegramBot.py (debe tener instaladas las librerías: telebot, torch, matplotlib, asyncio, pandas, numpy, aiofiles). Para más información ejecutar el comando /help.
 
 %===================================================================================
 
