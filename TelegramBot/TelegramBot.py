@@ -39,11 +39,6 @@ class MyStates(StatesGroup):
     Zero = State()
 
 
-@bot.message_handler(commands=['stop'])
-async def Stop(message):
-    await bot.send_message(message.chat.id, 'Adios')
-    sys.exit(0)
-
 def VerifyMethod(call):
     for i in Methods:
         if call == i:
@@ -76,6 +71,28 @@ async def Inicialize(message):
     await bot.set_state(message.from_user.id, MyStates.Inic, message.chat.id)
     Data = {'Method': Methods[0], 'Funct': Functs[0], 'Zero': Zeros[0], 'Parameters': []}
     #Crear Script de Funciones Basicas
+
+@bot.message_handler(commands=['stop'])
+async def Stop(message):
+    await bot.send_message(message.chat.id, 'Adios')
+    sys.exit(0)
+
+@bot.message_handler(state=MyStates.Inic, commands=['help'])
+async def PrintHelp(msg):
+    
+    Text='''
+        Comandos:
+    /start -> Iniciar/Re-Inicializar
+    /select -> Seleccionar Funcion a Trabajar
+    /graf -> Seleccionar metodo a graficar teniendo en cuenta la funcion actual
+    /isoclina -> Mostrar la isoclina de la funcion actual (Funcion: F(x,y))
+    /zero -> Seleccionar metodo para hallar el zero de la funcion actual (F(x,y) no permitida)
+    /stop -> Detener el bot
+    '''
+    
+    await bot.send_message(msg.chat.id, Text)
+
+
 
 @bot.message_handler(state = MyStates.Inic, commands=['graf'])
 async def SelectGrafMethod(msg):
@@ -273,25 +290,25 @@ async def ObtainGrafwithParam(msg, Funct, CArgs):
         #Manejo de errores
         Value = False
         
-        try:
+        # try:
             
-            state = await bot.get_state(msg.from_user.id, msg.chat.id)
+        state = await bot.get_state(msg.from_user.id, msg.chat.id)
+        
+        if state == MyStates.Isoc.name:
+            Value = await CallIsoclina(msg, Args)
+        elif state == MyStates.Param.name:
+            Value = await CallGrafMethod(msg, Funct, Args)
+        elif state == MyStates.Zero.name:
+            Value = await CallZero(msg, Funct, Args)
             
-            if state == MyStates.Isoc.name:
-                Value = await CallIsoclina(msg, Args)
-            elif state == MyStates.Param.name:
-                Value = await CallGrafMethod(msg, Funct, Args)
-            elif state == MyStates.Zero.name:
-                Value = await CallZero(msg, Funct, Args)
-            
-        except OverflowError as e:
-            await bot.send_message(msg.chat.id, f'Error -> {e}')
-        except ZeroDivisionError as e:
-            await bot.send_message(msg.chat.id, f'Error -> {e}')
-        except TypeError as e:
-            await bot.send_message(msg.chat.id, f'Error -> {e}')
-        except ValueError as e:
-            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        # except OverflowError as e:
+        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
+        # except ZeroDivisionError as e:
+        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
+        # except TypeError as e:
+        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
+        # except ValueError as e:
+        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
         
         
         #Mostrar Grafica
@@ -341,7 +358,9 @@ async def CallGrafMethod(msg, F, Args):
         X, Y = await asyncio.to_thread(F, *Args, ParamFunct.Function)
     except:
         await bot.send_message(msg.chat.id, f'Operacion no siportada')
+        return False
     
+    await bot.send_message(msg.chat.id, f'Ultimo punto: x={X[-1]}, y={Y[-1]}')
     plt.plot(X, Y)
     plt.grid()
     plt.savefig('Figura')
@@ -366,7 +385,11 @@ async def CallZero(msg, F, Args):
             pass
         
         x = await asyncio.to_thread(F, *Args, ParamFunct.Function)
-        x = min(x)
+        
+        try:
+            x = min(x)
+        except:
+            pass
         
         X, Y = await asyncio.to_thread(Tls.Graficar, min([min(Args), x]), max([max(Args), x]), ParamFunct.Function)
         
@@ -381,6 +404,14 @@ async def CallZero(msg, F, Args):
         return True
     await bot.send_message(msg.chat.id, f'Operacion no siportada para Funciones del tipo F(x,y)')
     return False
+
+
+
+
+
+
+
+
 
 
 

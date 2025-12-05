@@ -27,7 +27,7 @@ def __Isoclina(Funtion, seg ,lrg, rrg, drg, urg, SeeVectors, SeeLines):
     __Vector(tang, X, Y, seg, SeeVectors, SeeLines)
 
 #Funcion Portal de Isoclina
-def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 2, fsize= (10,10), SeeVectors = True, SeeLines = True):
+def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 1, fsize= (10,10), SeeVectors = True, SeeLines = True):
     
     plt.subplots(figsize=fsize)
     
@@ -49,7 +49,7 @@ def RungeKutta4(xLeft, xRight, y, Der, intervals = 0.1):
     x0 = xLeft
     y0 = y
     
-    while x0 < xRight:
+    while x0 <= xRight:
         #Pendiente
         k1 = Der(x0, y0)
         k2 = Der(x0 + intervals/2, y0 + intervals/2 * k1)
@@ -73,7 +73,7 @@ def EulerMejorado(xLeft, xRight, y, Der, intervals = 0.1):
     x0 = xLeft
     y0 = y
     
-    while x0 < xRight:
+    while x0 <= xRight:
         #Pendiente
         m0 = Der(x0, y0)
         m = (m0 + Der(x0 + intervals, y0 + intervals * m0)) / 2
@@ -229,7 +229,7 @@ def Distancia(t, x0 = 10000, v0 = 0, tp = 20):
     return x
 
 def __Distance__(x0,v0,t,r):
-    g = 32.174
+    g = 32
     vt = -g/r
     x = x0 + vt*t + 1/r * (v0 - vt) * (1 - np.e**(-r*t))
     return x
@@ -247,14 +247,14 @@ def Velocidad(t, y = 0, v0 = 0, tp = 20):
     return v
 
 def __Velocity__(v0, t, r):
-    g = 32.174
+    g = 32
     vt = -g/r
     v = (v0 - vt) * np.e**(-r*t) + vt
     return v
 
 
 def Der_Velocidad(t, v, tp = 20):
-    g = 32.174
+    g = 32
     r = 0.15
     
     if t >= tp:
@@ -263,10 +263,15 @@ def Der_Velocidad(t, v, tp = 20):
     return -g -r*v
 
 
-def D(u,z):
-    return u - z**2
 
-
+# def Der_Vel_Cuadr(t, v, tp = 20):
+#     g = 32
+#     r = 0.15
+    
+#     if t >= tp:
+#         r = 1.5
+    
+#     return -g + r * v**2
 
 
 #Class Functions ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,7 +307,7 @@ class SFunction(Derivade, Normal):
 
 DictFunct = {
     'Der-Velocidad': DFunctions(Der_Velocidad),
+    # 'Der-Vel-Cuadrado': DFunctions(Der_Vel_Cuadr),
     'Distancia': NFunction(Distancia),
     'Velocidad': SFunction(Velocidad)
 }
-
