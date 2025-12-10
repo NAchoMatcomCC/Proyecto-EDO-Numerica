@@ -1,4 +1,3 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -35,6 +34,23 @@ def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 1, fsize= (10,10),
     
     plt.xlim(XLeftrg, XRightrg)
     plt.ylim(YDownrg, YUprg)
+    plt.grid()
+    plt.savefig('Figura')
+    plt.close('all')
+
+#Diagrama de Fase ///////////////////////////////////////////
+def DiagramaFase(Xl, Xr, Yd, Yu, Mu, seg = 0.3):
+    
+    Xdiv = np.arange(Xl, Xr, seg)
+    Ydiv = np.arange(Yd, Yu, seg)
+    X, Y = np.meshgrid(Xdiv, Ydiv)
+    
+    tang = np.array([Der_Part_B(Mu, i) for i in Y])
+    
+    __Vector(tang, X, Y, seg, True, True)
+    
+    plt.xlim(Xl, Xr)
+    plt.ylim(Yd, Yu)
     plt.grid()
     plt.savefig('Figura')
     plt.close('all')
@@ -94,9 +110,6 @@ def Graficar(xLeft, xRight, F, intervals = 0.1):
     return (X,Y)
 
 #Cero Methods ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 def Bisection(a,b,Funtion, e = 1e-10):
     
@@ -262,8 +275,11 @@ def Der_Velocidad(t, v, tp = 20):
     
     return -g -r*v
 
+def Der_Part_B(u, z):
+    return u - z**2
 
 
+# Anulado por falta de genericidad
 # def Der_Vel_Cuadr(t, v, tp = 20):
 #     g = 32
 #     r = 0.15
@@ -309,5 +325,8 @@ DictFunct = {
     'Der-Velocidad': DFunctions(Der_Velocidad),
     # 'Der-Vel-Cuadrado': DFunctions(Der_Vel_Cuadr),
     'Distancia': NFunction(Distancia),
-    'Velocidad': SFunction(Velocidad)
+    'Velocidad': SFunction(Velocidad),
 }
+
+
+#Graf_Isoclina(0, 10, -5, 5, Der_Part_B, seg=0.5)

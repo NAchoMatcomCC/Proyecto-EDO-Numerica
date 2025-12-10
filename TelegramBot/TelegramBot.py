@@ -37,6 +37,7 @@ class MyStates(StatesGroup):
     Param = State()
     Isoc = State()
     Zero = State()
+    DFase = State()
 
 
 def VerifyMethod(call):
@@ -87,6 +88,7 @@ async def PrintHelp(msg):
     /graf -> Seleccionar metodo a graficar teniendo en cuenta la funcion actual
     /isoclina -> Mostrar la isoclina de la funcion actual (Funcion: F(x,y))
     /zero -> Seleccionar metodo para hallar el zero de la funcion actual (F(x,y) no permitida)
+    /DiagFase -> Mostrar Diagrama de Fase de la Parte B
     /stop -> Detener el bot
     '''
     
@@ -177,6 +179,25 @@ async def FunctionQueries(call):
 async def GetIsocParam(msg):
     
     await ObtainGrafwithParam(msg, Tls.Graf_Isoclina, 4)
+
+@bot.message_handler(commands=['DiagFase'])
+async def DiagramaFase(msg):
+    
+    text = '''Introduzca en un mensaje el "valor" los parametros en orden correspondiente separados por coma:\n
+XLeft: Limite Izquierdo en el eje x\n
+XRight: Limite Derecho en el eje x\n
+YDown: Limite Inferior en el eje y\n
+YUp: Limite Superior en el eje y\n
+Mu: Valor de la constante'''
+    
+    await bot.send_message(msg.chat.id, text)
+    await bot.set_state(msg.from_user.id, MyStates.DFase, msg.chat.id)
+
+@bot.message_handler(state = MyStates.DFase)
+async def ReciveMessage(msg):
+    
+    await ObtainGrafwithParam(msg, None, 5)
+
 
 @bot.message_handler(state=MyStates.Inic, commands=['zero'])
 async def ZeroMethodSelector(msg):
@@ -290,25 +311,27 @@ async def ObtainGrafwithParam(msg, Funct, CArgs):
         #Manejo de errores
         Value = False
         
-        # try:
+        try:
             
-        state = await bot.get_state(msg.from_user.id, msg.chat.id)
+            state = await bot.get_state(msg.from_user.id, msg.chat.id)
+                
+            if state == MyStates.Isoc.name:
+                Value = await CallIsoclina(msg, Args)
+            elif state == MyStates.Param.name:
+                Value = await CallGrafMethod(msg, Funct, Args)
+            elif state == MyStates.Zero.name:
+                Value = await CallZero(msg, Funct, Args)
+            elif state == MyStates.DFase.name:
+                Value = await CallDFase(msg, Args)
         
-        if state == MyStates.Isoc.name:
-            Value = await CallIsoclina(msg, Args)
-        elif state == MyStates.Param.name:
-            Value = await CallGrafMethod(msg, Funct, Args)
-        elif state == MyStates.Zero.name:
-            Value = await CallZero(msg, Funct, Args)
-            
-        # except OverflowError as e:
-        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except ZeroDivisionError as e:
-        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except TypeError as e:
-        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
-        # except ValueError as e:
-        #     await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except OverflowError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except ZeroDivisionError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except TypeError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
+        except ValueError as e:
+            await bot.send_message(msg.chat.id, f'Error -> {e}')
         
         
         #Mostrar Grafica
@@ -405,10 +428,23 @@ async def CallZero(msg, F, Args):
     await bot.send_message(msg.chat.id, f'Operacion no siportada para Funciones del tipo F(x,y)')
     return False
 
-
-
-
-
+async def CallDFase(msg, Args):
+    
+    if Args[0] > Args[1]:
+        Val = Args[0]
+        Args[0] = Args[1]
+        Args[1] = Val
+        await bot.send_message(msg.chat.id, f'Corrigiendo parametros {Args[0]} <-> {Args[1]}')
+    
+    if Args[2] > Args[3]:
+        Val = Args[2]
+        Args[2] = Args[3]
+        Args[3] = Val
+        await bot.send_message(msg.chat.id, f'Corrigiendo parametros {Args[2]} <-> {Args[3]}')
+    
+    Tls.DiagramaFase(*Args)
+    
+    return True
 
 
 
@@ -419,6 +455,10 @@ async def CallZero(msg, F, Args):
 async def InicFeedBack(message):
     await bot.send_message(message.chat.id, "Bot no Inicializado. Utilize el comando /start para correr el bot")
 
+
+@bot.message_handler(commands=['ver'])
+async def VerEstado(msg):
+    print(await bot.get_state(msg.from_user.id, msg.chat.id))
 
 #Never Stop
 # Main async entry point
