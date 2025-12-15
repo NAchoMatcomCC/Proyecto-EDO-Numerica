@@ -39,13 +39,14 @@ def Graf_Isoclina(XLeftrg, XRightrg, YDownrg, YUprg, F, seg = 1, fsize= (10,10),
     plt.close('all')
 
 #Diagrama de Fase ///////////////////////////////////////////
-def DiagramaFase(Xl, Xr, Yd, Yu, Mu, seg = 0.3):
+def DiagramaFase(Xl, Xr, Yd, Yu, Mu, Funct, seg = 0.3):
     
     Xdiv = np.arange(Xl, Xr, seg)
     Ydiv = np.arange(Yd, Yu, seg)
     X, Y = np.meshgrid(Xdiv, Ydiv)
     
-    tang = np.array([Der_Part_B(Mu, i) for i in Y])
+    # tang = np.array([Der_Part_B(Mu, i) for i in Y])
+    tang = np.array([Funct(Mu, i) for i in Y])
     
     __Vector(tang, X, Y, seg, True, True)
     
@@ -278,6 +279,9 @@ def Der_Velocidad(t, v, tp = 20):
 def Der_Part_B(u, z):
     return u - z**2
 
+def Der_Part_C(u, v):
+    return -32 - 0.5 * v
+
 
 # Anulado por falta de genericidad
 # def Der_Vel_Cuadr(t, v, tp = 20):
@@ -328,5 +332,12 @@ DictFunct = {
     'Velocidad': SFunction(Velocidad),
 }
 
+DictFase = {
+    'Der_Part_B': Der_Part_B,
+    'Der_Part_C': Der_Part_C
+}
+
 
 #Graf_Isoclina(0, 10, -5, 5, Der_Part_B, seg=0.5)
+
+#DiagramaFase(0, 10, -70, -56, 0)

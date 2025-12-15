@@ -24,12 +24,13 @@ bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 
 Methods = ['RK4', 'EM', 'Graf']
 Functs = ['Der-Velocidad', 'Distancia', 'Velocidad']
+DFase = ['Der_Part_B', 'Der_Part_C']
 Zeros = ['SEC', 'BS', 'BIQI', 'RF', 'NM']
 Data = {
     'Method': Methods[0],
     'Funct': Functs[0],
     'Zero': Zeros[0],
-    'Parameters': []
+    'DFase': DFase[0]
 }
 
 class MyStates(StatesGroup):
@@ -48,6 +49,12 @@ def VerifyMethod(call):
 
 def VerifyFunct(call):
     for i in Functs:
+        if call == i:
+            return True
+    return False
+
+def VerifyDFase(call):
+    for i in DFase:
         if call == i:
             return True
     return False
@@ -174,6 +181,26 @@ async def FunctionQueries(call):
     
     await bot.answer_callback_query(call.id, f'{call.data} establecido')
     Data['Funct'] = call.data
+
+@bot.message_handler(commands=['SDFase'])
+async def SelectFunction(msg):
+    
+    markup = tp.InlineKeyboardMarkup()
+    
+    for D in DFase:
+        button = tp.InlineKeyboardButton(D, callback_data= D)
+        markup.add(button)
+    
+    Text = '''Selecciona una de las siguientes funciones:\n
+    (Por defecto: "Der_Part_B")'''
+    
+    await bot.send_message(msg.chat.id, Text, reply_markup = markup)
+
+@bot.callback_query_handler(func= lambda call : VerifyDFase(call.data))
+async def FunctionQueries(call):
+    
+    await bot.answer_callback_query(call.id, f'{call.data} establecido')
+    Data['DFase'] = call.data
 
 @bot.message_handler(state=MyStates.Isoc)
 async def GetIsocParam(msg):
@@ -442,7 +469,7 @@ async def CallDFase(msg, Args):
         Args[3] = Val
         await bot.send_message(msg.chat.id, f'Corrigiendo parametros {Args[2]} <-> {Args[3]}')
     
-    Tls.DiagramaFase(*Args)
+    Tls.DiagramaFase(*Args, Tls.DictFase[Data['DFase']])
     
     return True
 
